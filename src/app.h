@@ -22,7 +22,8 @@
 
 struct sDataStore
 {
-    std::vector<cObj *> theInput;
+    std::vector<cServer *> theServers;
+    std::vector<cClient *> theClients;
     std::vector<cOutput *> theOutput;
 
 };

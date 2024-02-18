@@ -1,24 +1,16 @@
 #include "app.h"
 
-void cObj::add( const std::string& name )
+void cServer::add( const std::string& name , const cxy& loc )
 {
-    theDataStore.theInput.push_back( new cObj(name) );
+    theDataStore.theServers.push_back( new cServer(name,loc) );
+}
+void cClient::add( const std::string& name , const cxy& loc )
+{
+    theDataStore.theClients.push_back( new cClient(name,loc) );
 }
 
- std::vector<cObj*> cObj::get()
- {
-    return theDataStore.theInput;
- }
-
- std::string cObj::name() const
- {
-    return myName;
- }
-
- std::string cObj::text()
+double cClient::dist2( cServer& s)
 {
-    std::string ret;
-    for( cObj* o : theDataStore.theInput )
-        ret += o->name() + ", ";
-    return ret;
+    return myLoc.dist2( s.loc() );
 }
+

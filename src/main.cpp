@@ -1,38 +1,86 @@
+#include <cfloat>
 #include "app.h"
-
-#include <wex.h>
-#include "cGUI.h"
 
 sDataStore theDataStore;
 
 void generate()
 {
-    cObj::add("A");
-    cObj::add("B");
-    cObj::add("C");
+    // Imagine there are 10 clients and 3 servers.
+    for( int k = 0; k < 3;k++) {
+        cxy loc(rand() % 100, rand() % 100);
+        cServer::add(std::to_string(k),loc);
+    }
+    for( int k = 0; k < 10;k++) {
+        cxy loc(rand() % 100, rand() % 100);
+        cClient::add(std::to_string(k),loc);
+    }
+
+    std::cout << theDataStore.theServers.size() << " servers, "
+        << theDataStore.theClients.size() << " clients\n";
 }
 
 void calculate()
 {
-    for( cObj* o : cObj::get() )
-    {
-        theDataStore.theOutput.push_back(
-            new cOutput( o->name() + "-processed"));
-    }
-}
+    /*
+    LOOP until stop
+Loop over servers
+  SET closest = NULL
+  SET shortest = INFINITY
+  Loop over clients 
+     IF client has server
+         CONTINUE
+     SET dist = distance from client to server
+     IF dist < shortest
+       SET closest = client
+       SET shortest = dist
+  ENDLOOP over clients
+  IF closest == NULL
+       STOP
+  Connect closest client to server
+ENDLOOP over servers
+ENDLOOP until stop
+    */
+
+   while( true )
+   {
+        for( auto s : theDataStore.theServers )
+        {
+            cClient* closest = 0;
+            double shortest = DBL_MAX;
+
+            for( auto c : theDataStore.theClients )
+            {
+                if( c->hasServer() )
+                    continue;
+                
+                double dist2 = c->dist2( *s );
+                if( dist2 < shortest ) {
+                    shortest = dist2;
+                    closest = c;
+                }
+            }
+
+            if( ! closest ) {
+                std::cout << "Clients per server: ";
+                for( auto sc : theDataStore.theServers )
+                    std::cout << sc->clientCount() << " ";
+                std::cout << "\n";
+                return;
+            }
+
+            closest->Server( s );
+            
+        }
+   }
 
 
-std::string textOutput()
-{
-        std::string ret;
-    return ret;
 }
+
 
 main()
 {
-    cGUI theGUI(
-        "DataStore App",
-        {50, 50, 1000, 500});
+    generate();
+    calculate();
 
     return 0;
 }
