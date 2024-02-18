@@ -43,16 +43,20 @@ ENDLOOP until stop
 
    while( true )
    {
+        // loop over servers
         for( auto s : theDataStore.theServers )
         {
             cClient* closest = 0;
             double shortest = DBL_MAX;
 
+            // loop over clients
             for( auto c : theDataStore.theClients )
             {
+                // client already connected to server
                 if( c->hasServer() )
                     continue;
                 
+                // check for closest client so far
                 double dist2 = c->dist2( *s );
                 if( dist2 < shortest ) {
                     shortest = dist2;
@@ -60,7 +64,10 @@ ENDLOOP until stop
                 }
             }
 
+            // check if all clients connected to a server
             if( ! closest ) {
+
+                // done, reprt results
                 std::cout << "Clients per server: ";
                 for( auto sc : theDataStore.theServers )
                     std::cout << sc->clientCount() << " ";
@@ -68,6 +75,7 @@ ENDLOOP until stop
                 return;
             }
 
+            // connect client to server
             closest->Server( s );
             
         }
