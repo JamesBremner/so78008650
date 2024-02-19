@@ -67,11 +67,14 @@ ENDLOOP until stop
             // check if all clients connected to a server
             if( ! closest ) {
 
-                // done, reprt results
+                // done, report results
                 std::cout << "Clients per server: ";
                 for( auto sc : theDataStore.theServers )
                     std::cout << sc->clientCount() << " ";
-                std::cout << "\n";
+                double total = 0;
+                for( auto c : theDataStore.theClients)
+                    total += c->dist2server();
+                std::cout << "total distance: " << total << "\n";
                 return;
             }
 
